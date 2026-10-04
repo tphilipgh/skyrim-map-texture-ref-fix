@@ -34,7 +34,7 @@ __declspec(dllexport) const SKSEPluginVersionData SKSEPlugin_Version = {
     1,
     0x01000000,
     "MapTextureRefFix",
-    "tphilipgh",
+    "danellos",
     "",
     0,
     0,
