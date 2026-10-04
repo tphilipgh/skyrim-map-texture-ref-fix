@@ -7,7 +7,8 @@ by the August 2026 "Creations" update (game versions 1.7.99 / 1.7.104). This cra
 CrossOver Mac users and may potentially affect Proton (Linux) users as well. If you encounter
 intermittent crashes when opening the map, this may solve the issue.
 
-As a disclaimer, agentic AI (specifically Claude Code) was used to diagnose and create this patch.
+As a disclaimer, agentic AI (specifically Claude Code) was used to diagnose the issue and 
+create this patch.
 
 ## Symptoms
 
