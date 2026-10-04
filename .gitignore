@@ -1,4 +1,7 @@
 *.dll
 *.o
+*.obj
+*.exp
+*.lib
 *.pdb
 .DS_Store

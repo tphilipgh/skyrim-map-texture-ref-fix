@@ -69,13 +69,11 @@ unchanged on other Wine platforms and on Windows for 1.7.104.0, but those are un
 
 ## Build
 
-Cross-compiled from macOS with MinGW-w64 (`brew install mingw-w64`):
+The source is plain C against the Win32 API and builds with any x64 Windows toolchain.
 
-```sh
-./build.sh
-```
-
-On Windows, any MSVC or MinGW toolchain works; the source is plain C and freestanding.
+* **MSVC** (Windows): open an "x64 Native Tools Command Prompt" and run `build.bat`.
+* **MinGW-w64** (Windows via MSYS2, Linux, or macOS via `brew install mingw-w64`): run `build.sh`.
+* **clang-cl** works with the same command line as `build.bat`.
 
 ## Notes
 

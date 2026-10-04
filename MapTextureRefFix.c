@@ -1,13 +1,22 @@
-/* MapTextureRefFix - SKSE plugin for Skyrim SE 1.7.104.0
+/* MapTextureRefFix - SKSE64 plugin for Skyrim Special Edition 1.7.104.0
+ *
  * Fixes the map-menu crash introduced by the August 2026 update.
  * BSScaleformImageLoader, when serving an "img://" render-target image (the local map),
  * fetches BSGraphics::Renderer::renderTargets[idx].texture WITHOUT AddRef and then calls
- * Release() on it. Each map open drops one reference; eventually the render target
- * texture is destroyed while still in use -> crash (deterministic 4th open on Xbox,
- * intermittent on PC/DXMT). This plugin NOPs that unbalanced Release().
+ * Release() on it. Each map open drops one reference; eventually the render-target
+ * texture is destroyed while still in use and the next map open is a use-after-free.
+ * How soon that crashes depends on how quickly the platform recycles freed memory.
+ * This plugin NOPs the unbalanced Release() in memory at load time.
+ *
+ * Plain C, Win32 API only (kernel32 + shell32). Builds with MSVC, MinGW-w64 or clang-cl;
+ * no C runtime, Address Library or CommonLib dependency.
  */
 #include <windows.h>
 #include <shlobj.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct {
     UINT32 dataVersion;
@@ -78,7 +87,7 @@ static int apply_patch(void)
     return 1;
 }
 
-__declspec(dllexport) BOOL SKSEPlugin_Load(const void *skse)
+__declspec(dllexport) BOOL __cdecl SKSEPlugin_Load(const void *skse)
 {
     (void)skse;
     logline("MapTextureRefFix 1.0 loading (target: Skyrim SE 1.7.104.0)");
@@ -91,3 +100,7 @@ BOOL WINAPI DllMain(HINSTANCE h, DWORD reason, LPVOID reserved)
     (void)h; (void)reason; (void)reserved;
     return TRUE;
 }
+
+#ifdef __cplusplus
+}
+#endif
