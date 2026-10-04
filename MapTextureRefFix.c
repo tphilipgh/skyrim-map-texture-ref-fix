@@ -48,16 +48,53 @@ static const BYTE  kExpect[] = { 0x48,0x8b,0x16, 0x48,0x8b,0xce, 0xff,0x52,0x10,
 #define OFF_CALL  0x117312Bu
 #define CALL_LEN  3
 
+/* Append src to dst without overflowing a buffer of cap bytes. Returns 0 if it would not fit. */
+static int append_bounded(char *dst, size_t cap, const char *src)
+{
+    size_t have = (size_t)lstrlenA(dst), need = (size_t)lstrlenA(src);
+    if (have + need + 1 > cap) return 0;
+    lstrcatA(dst, src);
+    return 1;
+}
+
+static int dir_exists(const char *path)
+{
+    DWORD a = GetFileAttributesA(path);
+    return a != INVALID_FILE_ATTRIBUTES && (a & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+/* Resolve <Documents>\My Games\<game folder>\SKSE\MapTextureRefFix.log.
+ * SKSE uses a different <game folder> per store, so try each and keep the first that exists.
+ * Returns 0 if no SKSE folder is found or the path does not fit; logging is then skipped. */
+static int log_path(char *out, size_t cap)
+{
+    static const char *const kGameFolders[] = {
+        "\\My Games\\Skyrim Special Edition",
+        "\\My Games\\Skyrim Special Edition GOG",
+        "\\My Games\\Skyrim Special Edition EPIC",
+    };
+    char docs[MAX_PATH];
+    docs[0] = 0;
+    if (SHGetFolderPathA(NULL, CSIDL_MYDOCUMENTS, NULL, 0, docs) != S_OK) return 0;
+    for (size_t i = 0; i < sizeof(kGameFolders) / sizeof(kGameFolders[0]); i++) {
+        out[0] = 0;
+        if (!append_bounded(out, cap, docs)) return 0;
+        if (!append_bounded(out, cap, kGameFolders[i])) return 0;
+        if (!append_bounded(out, cap, "\\SKSE")) return 0;
+        if (!dir_exists(out)) continue;
+        return append_bounded(out, cap, "\\MapTextureRefFix.log");
+    }
+    return 0;
+}
+
 static void logline(const char *msg)
 {
-    char path[MAX_PATH];
-    path[0] = 0;
-    if (SHGetFolderPathA(NULL, CSIDL_MYDOCUMENTS, NULL, 0, path) != S_OK) return;
-    lstrcatA(path, "\\My Games\\Skyrim Special Edition\\SKSE\\MapTextureRefFix.log");
+    char path[MAX_PATH + 128];
+    if (!log_path(path, sizeof(path))) return;
     HANDLE h = CreateFileA(path, FILE_APPEND_DATA, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (h == INVALID_HANDLE_VALUE) return;
     DWORD w;
-    WriteFile(h, msg, lstrlenA(msg), &w, NULL);
+    WriteFile(h, msg, (DWORD)lstrlenA(msg), &w, NULL);
     WriteFile(h, "\r\n", 2, &w, NULL);
     CloseHandle(h);
 }
