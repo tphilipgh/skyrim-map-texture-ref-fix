@@ -14,8 +14,8 @@ As a disclaimer, agentic AI was used to diagnose and patch this issue.
 The game crashes to desktop when opening the map. This plugin fixes the crash on
 macOS under CrossOver with the DXMT backend, where it surfaces as `EXCEPTION_ILLEGAL_INSTRUCTION`
 (`ud2`) inside `d3d11.dll` with `MapMenu` and `BSScaleformImageLoader` on the stack, and
-potentially other Wine platforms as well (Proton, Whisky, plain Wine). Console and Windows
-players report the same crash; the underlying bug is in the game executable.
+potentially other Wine platforms as well (Proton, Whisky, plain Wine). Console, Proton,
+and some Windows players report the same crash; the underlying bug is in the game executable.
 
 ## Root cause
 
