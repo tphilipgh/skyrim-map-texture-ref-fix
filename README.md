@@ -3,11 +3,11 @@
 A 10 KB SKSE64 plugin that fixes the **map-menu crash** introduced in Skyrim Special Edition
 by the August 2026 "Creations" update (game versions 1.7.99 / 1.7.104).
 
-Symptoms: the game crashes to desktop when opening the map. On Xbox it is deterministic
-(every 4th map open). On PC it depends on the platform: rare on Windows, more frequent under
-Proton/Wine, and intermittent on macOS via CrossOver/DXMT where it surfaces as
-`EXCEPTION_ILLEGAL_INSTRUCTION` (`ud2`) inside `d3d11.dll` with `MapMenu` and
-`BSScaleformImageLoader` on the stack.
+Symptoms: the game crashes to desktop when opening the map. This plugin fixes the crash on
+macOS under CrossOver with the DXMT backend, where it surfaces as `EXCEPTION_ILLEGAL_INSTRUCTION`
+(`ud2`) inside `d3d11.dll` with `MapMenu` and `BSScaleformImageLoader` on the stack, and
+potentially other Wine platforms as well (Proton, Whisky, plain Wine). Console and Windows
+players report the same crash; the underlying bug is in the game executable.
 
 ## Root cause
 
@@ -55,8 +55,8 @@ Imports are `kernel32.dll` and `shell32.dll` only.
 3. Launch through `skse64_loader.exe`. Check `skse64.log` for
    `plugin MapTextureRefFix.dll ... loaded correctly` and `MapTextureRefFix.log` for `applied`.
 
-Tested on macOS (CrossOver 26.3, DXMT backend). It patches the same executable, so it should
-work unchanged on Windows and Proton for 1.7.104.0.
+Tested on macOS (CrossOver 26.3, DXMT backend). It patches the same executable, so it may work
+unchanged on other Wine platforms and on Windows for 1.7.104.0, but those are untested.
 
 ## Build
 
