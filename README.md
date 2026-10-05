@@ -40,6 +40,21 @@ Wine reuse the memory promptly (deterministic crash), the Windows D3D runtime te
 corpse intact for a while (rarely crashes), and DXMT destroys resources asynchronously (a race,
 roughly 1 in 10 opens).
 
+## Bug 2: texture double release (v1.1)
+
+`BSGraphics::Renderer::DestroyTexture` (`SkyrimSE.exe+0x100F190`) runs when a texture's last
+engine reference goes away. It releases the texture's three D3D11 objects (the `ID3D11Texture2D`,
+its `ID3D11ShaderResourceView`, and a third view slot) and then, in a second identical block at
+`+0x100F1DE`, releases all three **again**. The matching allocation code (`+0x100DE60`) stores
+the pointers straight from `CreateTexture2D` / `CreateShaderResourceView` and never AddRefs, so
+every destroyed texture is over-released by one.
+
+How it shows up depends on the D3D11 implementation: random crashes in texture cleanup with
+`NiSourceTexture` on the stack, heap-corruption crashes in unrelated code (input polling, UI),
+and under Apple's D3DMetal a deterministic crash at the main menu because it frees objects
+immediately. The plugin replaces the 45-byte duplicate block with a short jump over it, after
+verifying the surrounding bytes.
+
 ## The fix
 
 NOP the 3-byte `call [rdx+0x10]` (`FF 52 10`) at `SkyrimSE.exe+0x117312B`. The renderer's own
