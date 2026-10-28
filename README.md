@@ -7,7 +7,7 @@ by the August 2026 "Creations" update (game versions 1.7.99 / 1.7.104). This cra
 CrossOver Mac users and may potentially affect Proton (Linux) users as well. If you encounter
 intermittent crashes when opening the map, this may solve the issue.
 
-This patch requires Skyrim Script Extender (SKSE64) to work. You may download and install 
+Requires Skyrim Script Extender (SKSE64) to work. You may download and install 
 it from here: <https://www.nexusmods.com/skyrimspecialedition/mods/30379>
 
 As a disclaimer, agentic AI (specifically Claude Code) was used to diagnose the issue and 
