@@ -1,4 +1,4 @@
-# MapTextureRefFix
+# Skyrim 1.7.99/1.7.104 (SKSE64): Map/Texture Ref Crash Fix for CrossOver Mac and Proton
 
 ## Introduction
 
